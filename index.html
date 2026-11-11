@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Альфа-Курс — помощник</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: var(--tg-theme-bg-color, #f4f6fb);
+      --card: var(--tg-theme-secondary-bg-color, #ffffff);
+      --text: var(--tg-theme-text-color, #1a1a1a);
+      --hint: var(--tg-theme-hint-color, #8a8f99);
+      --accent: var(--tg-theme-button-color, #ef3124);
+      --accent-text: var(--tg-theme-button-text-color, #ffffff);
+      --link: var(--tg-theme-link-color, #2f6fd6);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      padding-bottom: 20px;
+    }
+    header {
+      background: var(--card); padding: 20px 18px 14px;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    header h1 { font-size: 20px; margin-bottom: 4px; }
+    header p { color: var(--hint); font-size: 13px; }
+    .tabs {
+      display: flex; gap: 8px; padding: 14px 18px 4px;
+      position: sticky; top: 0; background: var(--bg); z-index: 2;
+    }
+    .tab {
+      flex: 1; padding: 10px; border: none; border-radius: 12px;
+      background: var(--card); color: var(--text); font-size: 14px; font-weight: 600;
+      cursor: pointer;
+    }
+    .tab.active { background: var(--accent); color: var(--accent-text); }
+    .content { padding: 14px 18px; }
+    .card {
+      background: var(--card); border-radius: 14px; padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 20px; margin-bottom: 8px;
+    }
+    .badge.free { background: rgba(52,168,83,.15); color: #1d9d52; }
+    .badge.paid { background: rgba(239,49,36,.12); color: var(--accent); }
+    .card h3 { font-size: 15px; margin-bottom: 6px; }
+    .card .desc { font-size: 13px; color: var(--hint); margin-bottom: 10px; }
+    .card a {
+      color: var(--link); text-decoration: none; font-size: 13px; font-weight: 600;
+    }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 13px; color: var(--hint); margin-bottom: 6px; }
+    .field input, .field select {
+      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(0,0,0,.08);
+      background: var(--card); color: var(--text); font-size: 15px;
+    }
+    .result {
+      margin-top: 8px; padding: 16px; border-radius: 14px;
+      background: var(--accent); color: var(--accent-text);
+      font-size: 16px; font-weight: 700; text-align: center;
+    }
+    .hint { font-size: 12px; color: var(--hint); margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>⚡️ Альфа-Курс</h1>
+    <p>ИИ-помощник для предпринимателей</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('courses')">🎓 Курсы</button>
+    <button class="tab" onclick="showTab('calc')">🧮 Калькулятор</button>
+  </div>
+
+  <div class="content">
+    <section id="tab-courses"></section>
+    <section id="tab-calc" style="display:none">
+      <div class="card">
+        <div class="field">
+          <label>Доход за месяц, ₽</label>
+          <input type="number" id="income" placeholder="Например, 300000">
+        </div>
+        <div class="field">
+          <label>Расходы за месяц, ₽ (для УСН 15%)</label>
+          <input type="number" id="expenses" placeholder="Необязательно">
+        </div>
+        <div class="field">
+          <label>Режим налогообложения</label>
+          <select id="regime">
+            <option value="usn6">УСН «Доходы» — 6%</option>
+            <option value="usn15">УСН «Доходы − расходы» — 15%</option>
+            <option value="ndfl">НДФЛ — 13%</option>
+            <option value="npd4">НПД (самозанятый, физлица) — 4%</option>
+            <option value="npd6">НПД (самозанятый, юрлица) — 6%</option>
+          </select>
+        </div>
+        <button class="tab active" style="width:100%" onclick="calc()">Рассчитать</button>
+        <div class="result" id="tax-result" style="display:none"></div>
+        <p class="hint">Упрощённый расчёт для оценки. Точный расчёт — на платформе Альфа-Курса.</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    const BASE = 'https://kurs.alfabank.ru';
+
+    // Актуальные курсы (бесплатные и платные)
+    const COURSES = [
+      { t: 'Азбука приёма платежей', url: 'azbuka-priyoma-platezhej', free: true },
+      { t: 'Бизнес в сфере услуг: запускаем с экспертами', url: 'biznes-bez-trevog-zapusk-proekta-v-sfere-uslug', free: true },
+      { t: 'Где взять деньги на бизнес', url: 'gde-vzyat-dengi-na-biznes', free: true },
+      { t: 'Как самозанятому стать ИП', url: 'kak-samozanyatomu-stat-ip', free: true },
+      { t: 'Маркетплейсы: с чего начать и как преуспеть', url: 'marketpleysy-s-chego-nachat-kak-preuspet', free: true },
+      { t: 'Просто о сложном: первые шаги в бизнесе', url: 'prosto-o-slozhnom', free: true },
+      { t: 'Генеративный ИИ: курс по промптингу', url: 'generativnyy-ii-kurs-po-promptingu', free: true },
+      { t: 'Госзакупки: теория и практика', url: 'goszakupki-teoriya-i-praktika', free: true },
+      { t: 'Азы финансовой грамотности', url: 'azy-finansovoj-gramotnosti', free: false, price: 'по подписке' },
+      { t: 'Интернет-маркетинг: разбираемся с экспертами', url: 'internet-marketing-dlya-malogo-biznesa', free: false, price: 'по подписке' },
+      { t: 'Как управлять командой', url: 'kak-upravlyat-komandoi', free: false, price: 'по подписке' },
+      { t: 'УСН на маркетплейсах: особенности налогового учёта', url: 'usn-na-marketplejsah-osobennosti-nalogovogo-uchyota', free: false, price: '3990 ₽' },
+    ];
+
+    function renderCourses() {
+      const el = document.getElementById('tab-courses');
+      el.innerHTML = COURSES.map(c => `
+        <div class="card">
+          <span class="badge ${c.free ? 'free' : 'paid'}">${c.free ? 'Бесплатно' : (c.price || 'Платно')}</span>
+          <h3>${c.t}</h3>
+          <a href="${BASE}/courses/${c.url}" target="_blank">Открыть курс →</a>
+        </div>
+      `).join('');
+    }
+
+    function showTab(name) {
+      document.getElementById('tab-courses').style.display = name === 'courses' ? '' : 'none';
+      document.getElementById('tab-calc').style.display = name === 'calc' ? '' : 'none';
+      document.querySelectorAll('.tab').forEach((b, i) => {
+        b.classList.toggle('active', (i === 0 && name === 'courses') || (i === 1 && name === 'calc'));
+      });
+    }
+
+    function calc() {
+      const income = parseFloat(document.getElementById('income').value) || 0;
+      const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+      const regime = document.getElementById('regime').value;
+      let tax = 0, label = '';
+      if (regime === 'usn6') { tax = income * 0.06; label = 'УСН 6%'; }
+      else if (regime === 'usn15') { const base = Math.max(income - expenses, 0); tax = base * 0.15; label = 'УСН 15%'; }
+      else if (regime === 'ndfl') { tax = income * 0.13; label = 'НДФЛ 13%'; }
+      else if (regime === 'npd4') { tax = income * 0.04; label = 'НПД 4%'; }
+      else if (regime === 'npd6') { tax = income * 0.06; label = 'НПД 6%'; }
+      const res = document.getElementById('tax-result');
+      res.style.display = 'block';
+      res.textContent = `${label}: ${tax.toLocaleString('ru-RU')} ₽ / мес`;
+      tg.HapticFeedback.notificationOccurred('success');
+    }
+
+    renderCourses();
+  </script>
+</body>
+</html>
