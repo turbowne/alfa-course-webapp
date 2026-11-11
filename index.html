@@ -113,29 +113,13 @@
     </section>
 
     <section id="tab-calc" style="display:none">
-      <div class="card">
-        <div class="field">
-          <label>Доход за месяц, ₽</label>
-          <input type="number" id="income" placeholder="Например, 300000">
-        </div>
-        <div class="field">
-          <label>Расходы за месяц, ₽ (для УСН 15%)</label>
-          <input type="number" id="expenses" placeholder="Необязательно">
-        </div>
-        <div class="field">
-          <label>Режим налогообложения</label>
-          <select id="regime">
-            <option value="usn6">УСН «Доходы» — 6%</option>
-            <option value="usn15">УСН «Доходы − расходы» — 15%</option>
-            <option value="ndfl">НДФЛ — 13%</option>
-            <option value="npd4">НПД (самозанятый, физлица) — 4%</option>
-            <option value="npd6">НПД (самозанятый, юрлица) — 6%</option>
-          </select>
-        </div>
-        <button class="btn" onclick="calc()">Рассчитать налог</button>
-        <div class="result" id="tax-result" style="display:none"></div>
-        <p class="hint">Упрощённый расчёт для оценки. Точный расчёт — на платформе Альфа-Курса.</p>
-      </div>
+      <select class="search" id="calc-select" onchange="renderCalc()">
+        <option value="tax">Налоги: УСН / НДФЛ / НПД</option>
+        <option value="nds">НДС: начислить / выделить</option>
+        <option value="percent">Проценты</option>
+        <option value="compare">Сравнение налоговых режимов</option>
+      </select>
+      <div id="calc-body"></div>
     </section>
 
     <div class="footer">Альфа-Курс · образовательная платформа Альфа-Банка</div>
@@ -224,9 +208,72 @@
       const idx = name === 'home' ? 0 : name === 'courses' ? 1 : 2;
       tabs.forEach((b, i) => b.classList.toggle('active', i === idx));
       if (name === 'courses') renderCourses();
+      if (name === 'calc') renderCalc();
     }
 
-    function calc() {
+    function fmt(n) { return (Math.round(n * 100) / 100).toLocaleString('ru-RU'); }
+
+    function showRes(html) {
+      const res = document.getElementById('res');
+      res.style.display = 'block';
+      res.innerHTML = html;
+      try { tg.HapticFeedback.notificationOccurred('success'); } catch (e) {}
+    }
+
+    function renderCalc() {
+      const sel = document.getElementById('calc-select').value;
+      const body = document.getElementById('calc-body');
+      if (sel === 'tax') {
+        body.innerHTML = `
+          <div class="card">
+            <div class="field"><label>Доход за месяц, ₽</label><input type="number" id="income" placeholder="Например, 300000"></div>
+            <div class="field"><label>Расходы за месяц, ₽ (для УСН 15%)</label><input type="number" id="expenses" placeholder="Необязательно"></div>
+            <div class="field"><label>Режим налогообложения</label>
+              <select id="regime">
+                <option value="usn6">УСН «Доходы» — 6%</option>
+                <option value="usn15">УСН «Доходы − расходы» — 15%</option>
+                <option value="ndfl">НДФЛ — 13%</option>
+                <option value="npd4">НПД (самозанятый, физлица) — 4%</option>
+                <option value="npd6">НПД (самозанятый, юрлица) — 6%</option>
+              </select></div>
+            <button class="btn" onclick="calcTax()">Рассчитать налог</button>
+            <div class="result" id="res" style="display:none"></div>
+            <p class="hint">Упрощённый расчёт для оценки. Точный расчёт — на платформе Альфа-Курса.</p>
+          </div>`;
+      } else if (sel === 'nds') {
+        body.innerHTML = `
+          <div class="card">
+            <div class="field"><label>Сумма, ₽</label><input type="number" id="nds-sum" placeholder="Например, 120000"></div>
+            <div class="field"><label>Ставка НДС</label>
+              <select id="nds-rate"><option value="20">20%</option><option value="10">10%</option><option value="0">0%</option></select></div>
+            <div class="field"><label>Операция</label>
+              <select id="nds-op"><option value="add">Начислить НДС сверху</option><option value="extract">Выделить НДС из суммы</option></select></div>
+            <button class="btn" onclick="calcNds()">Рассчитать</button>
+            <div class="result" id="res" style="display:none"></div>
+            <p class="hint">Начислить: НДС = сумма × ставка. Выделить: НДС = сумма × ставка / (100 + ставка).</p>
+          </div>`;
+      } else if (sel === 'percent') {
+        body.innerHTML = `
+          <div class="card">
+            <div class="field"><label>Число</label><input type="number" id="p-num" placeholder="Например, 50000"></div>
+            <div class="field"><label>Процент, %</label><input type="number" id="p-per" placeholder="Например, 15"></div>
+            <button class="btn" onclick="calcPercent()">Посчитать процент</button>
+            <div class="result" id="res" style="display:none"></div>
+            <p class="hint">Сколько составит указанный процент от числа.</p>
+          </div>`;
+      } else {
+        body.innerHTML = `
+          <div class="card">
+            <div class="field"><label>Доход за месяц, ₽</label><input type="number" id="c-income" placeholder="Например, 300000"></div>
+            <div class="field"><label>Расходы за месяц, ₽ (для УСН 15%)</label><input type="number" id="c-expenses" placeholder="Необязательно"></div>
+            <button class="btn" onclick="calcCompare()">Сравнить режимы</button>
+            <div class="result" id="res" style="display:none"></div>
+            <p class="hint">Сравнение налоговой нагрузки по режимам (без учёта страховых взносов).</p>
+          </div>`;
+      }
+    }
+
+    function calcTax() {
       const income = parseFloat(document.getElementById('income').value) || 0;
       const expenses = parseFloat(document.getElementById('expenses').value) || 0;
       const regime = document.getElementById('regime').value;
@@ -236,10 +283,40 @@
       else if (regime === 'ndfl') { tax = income * 0.13; label = 'НДФЛ 13%'; }
       else if (regime === 'npd4') { tax = income * 0.04; label = 'НПД 4%'; }
       else if (regime === 'npd6') { tax = income * 0.06; label = 'НПД 6%'; }
-      const res = document.getElementById('tax-result');
-      res.style.display = 'block';
-      res.textContent = `${label}: ${tax.toLocaleString('ru-RU')} ₽ / мес`;
-      try { tg.HapticFeedback.notificationOccurred('success'); } catch (e) {}
+      showRes(`${label}: <b>${fmt(tax)} ₽</b> / мес`);
+    }
+
+    function calcNds() {
+      const sum = parseFloat(document.getElementById('nds-sum').value) || 0;
+      const rate = parseFloat(document.getElementById('nds-rate').value) || 0;
+      const op = document.getElementById('nds-op').value;
+      let nds, total;
+      if (op === 'add') { nds = sum * rate / 100; total = sum + nds; }
+      else { nds = sum * rate / (100 + rate); total = sum; }
+      showRes(`НДС (${rate}%): <b>${fmt(nds)} ₽</b><br>Итого: <b>${fmt(total)} ₽</b>`);
+    }
+
+    function calcPercent() {
+      const num = parseFloat(document.getElementById('p-num').value) || 0;
+      const per = parseFloat(document.getElementById('p-per').value) || 0;
+      showRes(`${per}% от ${fmt(num)} = <b>${fmt(num * per / 100)}</b>`);
+    }
+
+    function calcCompare() {
+      const income = parseFloat(document.getElementById('c-income').value) || 0;
+      const expenses = parseFloat(document.getElementById('c-expenses').value) || 0;
+      const rows = [
+        ['УСН 6%', income * 0.06],
+        ['УСН 15%', Math.max(income - expenses, 0) * 0.15],
+        ['НДФЛ 13%', income * 0.13],
+        ['НПД 4% (физлица)', income * 0.04],
+        ['НПД 6% (юрлица)', income * 0.06],
+      ];
+      const best = rows.reduce((a, b) => (a[1] <= b[1] ? a : b));
+      const table = rows.map(r =>
+        `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px;">${r[0]}<b>${fmt(r[1])} ₽</b></div>`
+      ).join('');
+      showRes(`<div style="text-align:left;">${table}</div><div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.35);padding-top:6px;">💡 Выгоднее: <b>${best[0]}</b> — ${fmt(best[1])} ₽</div>`);
     }
 
     renderHome();
