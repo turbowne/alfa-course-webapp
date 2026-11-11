@@ -15,43 +15,58 @@
       --accent-text: var(--tg-theme-button-text-color, #ffffff);
       --link: var(--tg-theme-link-color, #2f6fd6);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg); color: var(--text);
-      padding-bottom: 20px;
+      background: var(--bg); color: var(--text); padding-bottom: 70px;
     }
-    header {
-      background: var(--card); padding: 20px 18px 14px;
-      border-bottom: 1px solid rgba(0,0,0,.06);
+    .hero {
+      background: linear-gradient(135deg, #ef3124 0%, #c41e12 100%);
+      color: #fff; padding: 22px 18px 26px;
     }
-    header h1 { font-size: 20px; margin-bottom: 4px; }
-    header p { color: var(--hint); font-size: 13px; }
+    .hero h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .hero p { font-size: 14px; opacity: .92; line-height: 1.45; }
+    .badge-row { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+    .pill {
+      background: rgba(255,255,255,.18); color: #fff; font-size: 12px; font-weight: 600;
+      padding: 5px 10px; border-radius: 20px;
+    }
     .tabs {
-      display: flex; gap: 8px; padding: 14px 18px 4px;
-      position: sticky; top: 0; background: var(--bg); z-index: 2;
+      display: flex; gap: 8px; padding: 12px 18px 6px;
+      position: sticky; top: 0; background: var(--bg); z-index: 5;
     }
     .tab {
-      flex: 1; padding: 10px; border: none; border-radius: 12px;
-      background: var(--card); color: var(--text); font-size: 14px; font-weight: 600;
-      cursor: pointer;
+      flex: 1; padding: 11px 6px; border: none; border-radius: 12px;
+      background: var(--card); color: var(--text); font-size: 14px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05);
     }
     .tab.active { background: var(--accent); color: var(--accent-text); }
-    .content { padding: 14px 18px; }
+    .content { padding: 12px 18px; }
+    .section-title { font-size: 16px; font-weight: 800; margin: 18px 0 10px; }
+    .quick {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;
+    }
+    .quick-card {
+      background: var(--card); border-radius: 16px; padding: 16px; text-align: center;
+      cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.05); border: 1px solid rgba(0,0,0,.03);
+    }
+    .quick-card .ico { font-size: 30px; margin-bottom: 6px; }
+    .quick-card .lbl { font-size: 13px; font-weight: 700; }
     .card {
-      background: var(--card); border-radius: 14px; padding: 14px 16px;
-      margin-bottom: 10px;
+      background: var(--card); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.04); border: 1px solid rgba(0,0,0,.03);
     }
-    .badge {
-      display: inline-block; font-size: 11px; font-weight: 700;
-      padding: 3px 8px; border-radius: 20px; margin-bottom: 8px;
-    }
+    .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; margin-bottom: 7px; }
     .badge.free { background: rgba(52,168,83,.15); color: #1d9d52; }
     .badge.paid { background: rgba(239,49,36,.12); color: var(--accent); }
-    .card h3 { font-size: 15px; margin-bottom: 6px; }
-    .card .desc { font-size: 13px; color: var(--hint); margin-bottom: 10px; }
+    .card h3 { font-size: 15px; line-height: 1.35; margin-bottom: 6px; }
+    .card .desc { font-size: 13px; color: var(--hint); line-height: 1.45; margin-bottom: 10px; }
     .card a {
-      color: var(--link); text-decoration: none; font-size: 13px; font-weight: 600;
+      color: var(--link); text-decoration: none; font-size: 13px; font-weight: 700;
+    }
+    .search {
+      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,.08);
+      background: var(--card); color: var(--text); font-size: 15px; margin-bottom: 6px;
     }
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 13px; color: var(--hint); margin-bottom: 6px; }
@@ -59,27 +74,44 @@
       width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(0,0,0,.08);
       background: var(--card); color: var(--text); font-size: 15px;
     }
+    .btn {
+      width: 100%; padding: 13px; border: none; border-radius: 12px;
+      background: var(--accent); color: var(--accent-text); font-size: 15px; font-weight: 700; cursor: pointer;
+    }
     .result {
-      margin-top: 8px; padding: 16px; border-radius: 14px;
+      margin-top: 10px; padding: 16px; border-radius: 14px;
       background: var(--accent); color: var(--accent-text);
       font-size: 16px; font-weight: 700; text-align: center;
     }
-    .hint { font-size: 12px; color: var(--hint); margin-top: 8px; }
+    .hint { font-size: 12px; color: var(--hint); margin-top: 8px; line-height: 1.5; }
+    .footer { text-align: center; color: var(--hint); font-size: 11px; margin-top: 22px; }
   </style>
 </head>
 <body>
-  <header>
+  <div class="hero">
     <h1>⚡️ Альфа-Курс</h1>
-    <p>ИИ-помощник для предпринимателей</p>
-  </header>
+    <p id="greeting">ИИ-помощник для предпринимателей</p>
+    <div class="badge-row">
+      <span class="pill">📚 855+ статей</span>
+      <span class="pill">🎓 30 курсов</span>
+      <span class="pill">🧮 7 калькуляторов</span>
+    </div>
+  </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('courses')">🎓 Курсы</button>
+    <button class="tab active" onclick="showTab('home')">🏠 Главная</button>
+    <button class="tab" onclick="showTab('courses')">🎓 Курсы</button>
     <button class="tab" onclick="showTab('calc')">🧮 Калькулятор</button>
   </div>
 
   <div class="content">
-    <section id="tab-courses"></section>
+    <section id="tab-home"></section>
+
+    <section id="tab-courses" style="display:none">
+      <input class="search" id="search" placeholder="🔍 Поиск курса…" oninput="renderCourses()">
+      <div id="courses-list"></div>
+    </section>
+
     <section id="tab-calc" style="display:none">
       <div class="card">
         <div class="field">
@@ -100,53 +132,98 @@
             <option value="npd6">НПД (самозанятый, юрлица) — 6%</option>
           </select>
         </div>
-        <button class="tab active" style="width:100%" onclick="calc()">Рассчитать</button>
+        <button class="btn" onclick="calc()">Рассчитать налог</button>
         <div class="result" id="tax-result" style="display:none"></div>
         <p class="hint">Упрощённый расчёт для оценки. Точный расчёт — на платформе Альфа-Курса.</p>
       </div>
     </section>
+
+    <div class="footer">Альфа-Курс · образовательная платформа Альфа-Банка</div>
   </div>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
+    tg.setHeaderColor('#ef3124');
+
+    // Персональное приветствие
+    try {
+      const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+      const name = user && user.first_name ? user.first_name : '';
+      document.getElementById('greeting').textContent =
+        name ? `Привет, ${name}! Помогу с бизнесом 👋` : 'ИИ-помощник для предпринимателей';
+    } catch (e) {}
 
     const BASE = 'https://kurs.alfabank.ru';
 
-    // Актуальные курсы (бесплатные и платные)
     const COURSES = [
-      { t: 'Азбука приёма платежей', url: 'azbuka-priyoma-platezhej', free: true },
-      { t: 'Бизнес в сфере услуг: запускаем с экспертами', url: 'biznes-bez-trevog-zapusk-proekta-v-sfere-uslug', free: true },
-      { t: 'Где взять деньги на бизнес', url: 'gde-vzyat-dengi-na-biznes', free: true },
-      { t: 'Как самозанятому стать ИП', url: 'kak-samozanyatomu-stat-ip', free: true },
-      { t: 'Маркетплейсы: с чего начать и как преуспеть', url: 'marketpleysy-s-chego-nachat-kak-preuspet', free: true },
-      { t: 'Просто о сложном: первые шаги в бизнесе', url: 'prosto-o-slozhnom', free: true },
-      { t: 'Генеративный ИИ: курс по промптингу', url: 'generativnyy-ii-kurs-po-promptingu', free: true },
-      { t: 'Госзакупки: теория и практика', url: 'goszakupki-teoriya-i-praktika', free: true },
-      { t: 'Азы финансовой грамотности', url: 'azy-finansovoj-gramotnosti', free: false, price: 'по подписке' },
-      { t: 'Интернет-маркетинг: разбираемся с экспертами', url: 'internet-marketing-dlya-malogo-biznesa', free: false, price: 'по подписке' },
-      { t: 'Как управлять командой', url: 'kak-upravlyat-komandoi', free: false, price: 'по подписке' },
-      { t: 'УСН на маркетплейсах: особенности налогового учёта', url: 'usn-na-marketplejsah-osobennosti-nalogovogo-uchyota', free: false, price: '3990 ₽' },
+      { t: 'Азбука приёма платежей', d: 'Приём платежей: касса, эквайринг и СБП простыми словами.', url: 'azbuka-priyoma-platezhej', free: true },
+      { t: 'Бизнес в сфере услуг: запускаем с экспертами', d: 'Как открыть бизнес в сфере услуг и сохранить баланс.', url: 'biznes-bez-trevog-zapusk-proekta-v-sfere-uslug', free: true },
+      { t: 'Бизнес на Авито: лёгкая продажа товаров', d: 'От регистрации до продвижения — как быстро найти клиентов.', url: 'biznes-na-avito-lyogkaya-prodazha-tovarov', free: true },
+      { t: 'Бизнес с Китаем: финансы и платежи', d: 'Закупка китайских товаров и продажи на маркетплейсах.', url: 'biznes-s-kitaem', free: true },
+      { t: 'Где взять деньги на бизнес', d: 'Эксперты по финансам — где найти средства на старт.', url: 'gde-vzyat-dengi-na-biznes', free: true },
+      { t: 'Госзакупки: теория и практика', d: 'Госзакупки — не только для крупных игроков.', url: 'goszakupki-teoriya-i-praktika', free: true },
+      { t: 'Как самозанятому стать ИП', d: 'Когда и как переходить от самозанятости к ИП.', url: 'kak-samozanyatomu-stat-ip', free: true },
+      { t: 'Маркетплейсы: с чего начать и как преуспеть', d: 'Как зарабатывать на WB, Ozon и Яндекс Маркете.', url: 'marketpleysy-s-chego-nachat-kak-preuspet', free: true },
+      { t: 'Просто о сложном: первые шаги в бизнесе', d: 'С чего начать бизнес — без паники, с экспертами Альфа-Банка.', url: 'prosto-o-slozhnom', free: true },
+      { t: 'Курс-практикум: создай свой бизнес-проект', d: 'Инструменты для создания собственного бизнес-проекта.', url: 'kurs-praktikum-sozdanie-biznes-proekta1', free: true },
+      { t: 'Где брать клиентов: продвижение в Яндексе', d: 'Подготовка предложения, запуск продвижения, оценка результата.', url: 'gde-brat-klientov-prodvizhenie-v-yandekse', free: true },
+      { t: 'ИИ для всех: экономим время и упрощаем работу', d: 'Нейросети для ежедневных задач и оптимизации процессов.', url: 'ii-dlya-vsekh-ehkonomim-vremya-i-uproshchaem-rabotu', free: true },
+      { t: 'Подбор и адаптация команды продаж', d: 'Как искать, выбирать и адаптировать продажников.', url: 'podbor-i-adaptaciya-komandy-prodazh', free: true },
+      { t: 'Юридическая самопроверка бизнеса', d: 'Правовая самопроверка, чтобы не потерять бизнес.', url: 'yuridicheskaya-samoproverka-biznesa', free: true },
+      { t: 'Яндекс 360: порядок в бизнесе за 7 шагов', d: 'Наведите порядок: меньше рутины, больше эффективности.', url: 'yandeks-360-poryadok-v-biznese-za-7-shagov', free: true },
+      { t: 'Азы финансовой грамотности', d: 'Основы личных финансов: от сбережений до налогообложения.', url: 'azy-finansovoj-gramotnosti', free: false, price: 'по подписке' },
+      { t: 'Интернет-маркетинг: разбираемся с экспертами', d: 'Как продвигать товары и услуги в интернете.', url: 'internet-marketing-dlya-malogo-biznesa', free: false, price: 'по подписке' },
+      { t: 'Как управлять командой', d: 'Чтобы сотрудники были довольны, а бизнес развивался.', url: 'kak-upravlyat-komandoi', free: false, price: 'по подписке' },
+      { t: 'Google Таблицы для бизнеса', d: 'Автоматизируйте рутинные задачи бизнеса в таблицах.', url: 'google-tablicy-dlya-biznesa-uproshchaem-rabotu-s-dannymi', free: false, price: 'по подписке' },
+      { t: 'УСН на маркетплейсах: особенности налогового учёта', d: 'Учёт продаж на маркетплейсах без ошибок в налогах.', url: 'usn-na-marketplejsah-osobennosti-nalogovogo-uchyota', free: false, price: '3990 ₽' },
     ];
 
-    function renderCourses() {
-      const el = document.getElementById('tab-courses');
-      el.innerHTML = COURSES.map(c => `
-        <div class="card">
-          <span class="badge ${c.free ? 'free' : 'paid'}">${c.free ? 'Бесплатно' : (c.price || 'Платно')}</span>
-          <h3>${c.t}</h3>
-          <a href="${BASE}/courses/${c.url}" target="_blank">Открыть курс →</a>
+    function cardHtml(c) {
+      const badge = c.free
+        ? '<span class="badge free">Бесплатно</span>'
+        : `<span class="badge paid">${c.price || 'Платно'}</span>`;
+      return `<div class="card">
+        ${badge}
+        <h3>${c.t}</h3>
+        <div class="desc">${c.d}</div>
+        <a href="${BASE}/courses/${c.url}" target="_blank">Открыть курс →</a>
+      </div>`;
+    }
+
+    function renderHome() {
+      const el = document.getElementById('tab-home');
+      const free = COURSES.filter(c => c.free).slice(0, 3);
+      el.innerHTML = `
+        <div class="quick">
+          <div class="quick-card" onclick="showTab('courses')"><div class="ico">🎓</div><div class="lbl">Каталог курсов</div></div>
+          <div class="quick-card" onclick="showTab('calc')"><div class="ico">🧮</div><div class="lbl">Налоговый калькулятор</div></div>
         </div>
-      `).join('');
+        <div class="section-title">🔥 Популярное для старта</div>
+        ${free.map(cardHtml).join('')}
+        <div class="section-title">💡 Что умеет бот</div>
+        <div class="card"><div class="desc">📚 Отвечает на вопросы по базе знаний Альфа-Курса (855+ статей).</div></div>
+        <div class="card"><div class="desc">👤 Персонализирует рекомендации под ваш бизнес и налоговый режим.</div></div>
+        <div class="card"><div class="desc">🔔 Напоминает о налогах и важных событиях в бизнесе.</div></div>
+      `;
+    }
+
+    function renderCourses() {
+      const q = (document.getElementById('search').value || '').toLowerCase().trim();
+      const list = COURSES.filter(c => !q || c.t.toLowerCase().includes(q) || c.d.toLowerCase().includes(q));
+      document.getElementById('courses-list').innerHTML =
+        list.length ? list.map(cardHtml).join('') : '<div class="card"><div class="desc">Ничего не найдено 😔</div></div>';
     }
 
     function showTab(name) {
+      document.getElementById('tab-home').style.display = name === 'home' ? '' : 'none';
       document.getElementById('tab-courses').style.display = name === 'courses' ? '' : 'none';
       document.getElementById('tab-calc').style.display = name === 'calc' ? '' : 'none';
-      document.querySelectorAll('.tab').forEach((b, i) => {
-        b.classList.toggle('active', (i === 0 && name === 'courses') || (i === 1 && name === 'calc'));
-      });
+      const tabs = document.querySelectorAll('.tab');
+      const idx = name === 'home' ? 0 : name === 'courses' ? 1 : 2;
+      tabs.forEach((b, i) => b.classList.toggle('active', i === idx));
+      if (name === 'courses') renderCourses();
     }
 
     function calc() {
@@ -155,17 +232,17 @@
       const regime = document.getElementById('regime').value;
       let tax = 0, label = '';
       if (regime === 'usn6') { tax = income * 0.06; label = 'УСН 6%'; }
-      else if (regime === 'usn15') { const base = Math.max(income - expenses, 0); tax = base * 0.15; label = 'УСН 15%'; }
+      else if (regime === 'usn15') { tax = Math.max(income - expenses, 0) * 0.15; label = 'УСН 15%'; }
       else if (regime === 'ndfl') { tax = income * 0.13; label = 'НДФЛ 13%'; }
       else if (regime === 'npd4') { tax = income * 0.04; label = 'НПД 4%'; }
       else if (regime === 'npd6') { tax = income * 0.06; label = 'НПД 6%'; }
       const res = document.getElementById('tax-result');
       res.style.display = 'block';
       res.textContent = `${label}: ${tax.toLocaleString('ru-RU')} ₽ / мес`;
-      tg.HapticFeedback.notificationOccurred('success');
+      try { tg.HapticFeedback.notificationOccurred('success'); } catch (e) {}
     }
 
-    renderCourses();
+    renderHome();
   </script>
 </body>
 </html>
